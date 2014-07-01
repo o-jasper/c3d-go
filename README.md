@@ -29,6 +29,12 @@ Basically eth-go is a highly modular library for a full ethereum node, and go-et
 
 Now, grab c3d-go: `go get github.com/project-douglas/c3d-go`. That will install it.  If you make changes and want to re-install, just hit `go install` in the c3d-go repo. Run it with `c3d-go`, or `$GOPATH/bin/c3d-go` if you must.
 
+## Notes
+
+We're using a custom blockchain with two addresses and lots of funds in each.  The keys are in `keys.txt` and both are loaded.  A simple way to get everyone funds for now is to create a new address, use one of the genesis keys to send yourself some funds, and go from there.  This will all be automated soon
+
+Also, you can kill transmission with `c3d-go --killTransmission`.  I decided that might be convenient. 
+
 
 ## Features
 
