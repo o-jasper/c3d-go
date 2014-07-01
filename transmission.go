@@ -5,6 +5,7 @@ import (
     "time"
     "os/exec"
     "bytes"
+    "strings"
 )
 
 func KillPidByName(name string){
@@ -29,6 +30,11 @@ func KillPidByName(name string){
     c4.Wait()
 }
 
+func DownloadTorrent(infohash string){
+    CheckStartTransmission() 
+    StartTorrent(infohash)
+}
+
 func StartTransmission(){
     cmd := exec.Command("transmission-daemon")
     err := cmd.Run()
@@ -48,6 +54,30 @@ func StartTorrent(infohash string){
         log.Fatal(err)
     }
     log.Println("torrent download successfully started. Monitor at http://localhost:9091")
+}
+
+func IsTorrentDone(infohash string) bool {
+    cmd := exec.Command("transmission-remote", "-t", infohash, "--info")
+    var out bytes.Buffer
+    cmd.Stdout = &out
+    err := cmd.Run()
+    if err != nil {
+        log.Println("Couldn't get info for", infohash)
+        log.Println(err)
+    }
+    outstr := strings.Split(out.String(), "\n")
+    donestr := ""
+    for _, o := range(outstr){
+        if strings.Contains(o, "Done"){
+            donestr = o
+            break
+        }
+    }
+    log.Println(donestr)
+    if strings.Contains(donestr, "100"){
+        return true
+    }
+    return false
 }
 
 func IsTransmissionRunning() bool{
