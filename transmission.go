@@ -39,33 +39,38 @@ func StartTransmission(){
     cmd := exec.Command("transmission-daemon")
     err := cmd.Run()
     if err != nil{
-        log.Println("Couldn't start transmission...")
+        logger.Infoln("Couldn't start transmission...")
         log.Fatal(err)
     }
-    log.Println("Successfully started Transmission.  Watch it at http://localhost:9091")
+    logger.Infoln("Successfully started Transmission.  Watch it at http://localhost:9091")
 }
 
 func StartTorrent(infohash string){
-    log.Println("Starting torrent with infohash", infohash)
-    cmd := exec.Command("transmission-remote", "-a", "magnet:?xt=urn:btih:"+infohash)
+    logger.Infoln("Starting torrent with infohash", infohash)
+    cmd := exec.Command("transmission-remote", "--add", "magnet:?xt=urn:btih:"+infohash, "--dht")
     err := cmd.Run()
     if err != nil {
-        log.Println("Couldn't start torrent", infohash)
-        log.Fatal(err)
+        logger.Infoln("Error! Couldn't start torrent", infohash)
+    } else {
+        logger.Infoln("torrent download successfully started. Monitor at http://localhost:9091")
     }
-    log.Println("torrent download successfully started. Monitor at http://localhost:9091")
 }
 
-func IsTorrentDone(infohash string) bool {
-    cmd := exec.Command("transmission-remote", "-t", infohash, "--info")
+func GetTorrentInfo(infohash string) []string{
+    cmd := exec.Command("transmission-remote", "--torrent", infohash, "--info")
     var out bytes.Buffer
     cmd.Stdout = &out
     err := cmd.Run()
     if err != nil {
-        log.Println("Couldn't get info for", infohash)
-        log.Println(err)
+        logger.Infoln("Couldn't get info for", infohash)
+        logger.Infoln(err)
     }
     outstr := strings.Split(out.String(), "\n")
+    return outstr
+}
+
+func IsTorrentDone(infohash string) bool {
+    outstr := GetTorrentInfo(infohash)
     donestr := ""
     for _, o := range(outstr){
         if strings.Contains(o, "Done"){
@@ -73,7 +78,7 @@ func IsTorrentDone(infohash string) bool {
             break
         }
     }
-    log.Println(donestr)
+    logger.Infoln(donestr)
     if strings.Contains(donestr, "100"){
         return true
     }
