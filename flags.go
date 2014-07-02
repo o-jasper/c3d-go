@@ -1,8 +1,13 @@
 package main
 
 import (
+    "github.com/ethereum/eth-go/ethutil"
     "os"
     "flag"
+    "bytes"
+    "io/ioutil"
+    "log"
+    "fmt"
 )
 
 // Flags
@@ -12,6 +17,8 @@ var (
     isDone = flag.String("isDone", "", "check if torrent is done")
     lookupDownloadTorrent = flag.String("lookupDownloadTorrent", "", "lookup this contract address for an infohash, using storageAt flag for sotrage address")
     storageAt = flag.String("storageAt", "", "storage address in contract")
+    newKey = flag.Bool("newKey", false, "create a new key and send it funds from a genesis addr")
+    keyFile = flag.String("keyFile", "keys.txt", "file in which private keys are stored")
 )
 
 
@@ -38,6 +45,31 @@ func Init(){
        _ , peth := NewEthPEth()
        GetInfoHashStartTorrent(peth, *lookupDownloadTorrent, *storageAt)
        os.Exit(0)
+    }
+    if *newKey{
+        args := flag.Args()
+        n := flag.NArg()
+        filename := "keys.txt"
+        if n > 0{
+            filename = args[0]
+        }
+        var buf bytes.Buffer
+        keyData, err := ioutil.ReadFile(filename)
+        kP, err:= ethutil.GenerateNewKeyPair()
+        if err != nil{
+            log.Fatal("could not generate key")
+        }
+        priv := kP.PrivateKey
+        buf.WriteString(ethutil.Hex(priv))
+        buf.WriteString("\n")
+        buf.Write(keyData)
+        fmt.Println(buf.String())
+        err = ioutil.WriteFile(filename, buf.Bytes(), 0777)
+        if err != nil{
+            log.Fatal("error writing to key file")
+        }
+        log.Println("New key generated and added to ", filename, ". Funds will be deposited on next start up")
+        os.Exit(0)
     }
 
 }

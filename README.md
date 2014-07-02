@@ -18,7 +18,7 @@ eg.
 cd $GOPATH/src/github.com/ethereum/eth-go
 git add remote pd git@github.com:project-douglas/eth-go
 git checkout -b pd
-git pull pd develop
+git pull pd pd
 ```
 
 That adds the project-douglas repo as a remote, checkouts out a new pd branch, and pulls the pd repo down to that branch.  If you want to switch back to the real ethereum, just do `git checkout develop`
@@ -33,7 +33,7 @@ Now, grab c3d-go: `go get github.com/project-douglas/c3d-go`. That will install 
 
 We're using a custom blockchain with two addresses and lots of funds in each.  The keys are in `keys.txt` and both are loaded.  A simple way to get everyone funds for now is to create a new address, use one of the genesis keys to send yourself some funds, and go from there.  This will all be automated soon
 
-Also, you can kill transmission with `c3d-go --killTransmission`.  I decided that might be convenient. 
+There are a bunch of flags for doing simple things and quitting.  You can get a new key with `c3d-go --newKey`.  The next time `c3d-go` starts, it will send the new addressfunds from a genesis addr.
 
 
 ## Features

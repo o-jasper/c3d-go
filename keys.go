@@ -2,10 +2,11 @@ package main
 
 import (
     "github.com/ethereum/eth-go/ethutil"
+    "github.com/ethereum/eth-go/ethpub"
     "io/ioutil"
-    "fmt"
     "strings"
     "log"
+    "strconv"
 )
 
 
@@ -16,7 +17,6 @@ func newKeyPair(){
         log.Println("Tragedy! Could not generating keypair! Ba-bye!")
         log.Fatal(err)
     }
-    fmt.Println(keyPair)
     ethutil.GetKeyRing().Add(keyPair)
 //    keyRing.NewKeyPair(keyPair.PrivateKey)
 }
@@ -29,7 +29,6 @@ func loadKeys(filename string){
         newKeyPair()
     } else { 
         keys := strings.Split(string(keyData), "\n")
-        fmt.Println(keys)
         for _, k := range keys{
             if len(k) == 64{
                 keyPair, err := ethutil.NewKeyPairFromSec(ethutil.FromHex(k))
@@ -42,6 +41,24 @@ func loadKeys(filename string){
     if ethutil.GetKeyRing().Len() == 0{
         newKeyPair()
     }
-    fmt.Println(ethutil.GetKeyRing().Len())
+    logger.Infoln("Keys loaded: ", ethutil.GetKeyRing().Len())
+}
+
+func checkZeroBalance(peth *ethpub.PEthereum){
+    keys := ethutil.GetKeyRing()
+    master := ethutil.Hex(keys.Get(keys.Len()-1).PrivateKey)
+    logger.Infoln("master has ", peth.GetStateObject(ethutil.Hex(keys.Get(keys.Len()-1).Address())).Value())
+    for i:=0; i<keys.Len();i++{
+        k := keys.Get(i).Address()
+        val := peth.GetStateObject(ethutil.Hex(k)).Value()
+        logger.Infoln("key ", i, " ", ethutil.Hex(k), " ", val)
+        v, _ := strconv.Atoi(val)
+        if v < 100 {
+            _, err := peth.Transact(master, ethutil.Hex(k), "10000000000000000000", "1000", "1000", "")
+            if err != nil{
+                logger.Infoln("Error transfering funds to ", ethutil.Hex(k))
+            }
+        }
+    }
 }
 

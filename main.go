@@ -19,7 +19,7 @@ func callback(peth *ethpub.PEthereum, addr string, ethereum *eth.Ethereum){
     for {
         _ = <- ch
         hexAddr := ethutil.Hex([]byte(addr))
-        logger.Infoln("hex addr", hexAddr)
+        logger.Infoln("hex addr ", hexAddr)
         GetInfoHashStartTorrent(peth, hexAddr, "0")
     }
 }
@@ -43,26 +43,33 @@ func main() {
     ethereum.Port = "10101"
     ethereum.MaxPeers = 10
 
-    // deal with keys :) the two genesis block keys are in keys.txt.  loadKeys will get the both for you.
-    loadKeys("keys.txt")
-   
-    // start the node, and start mining 
+    //start the node
     ethereum.Start(false)
+
+    // deal with keys :) the two genesis block keys are in keys.txt.  loadKeys will get them both for you.
+    // if there are more keys, having 0 balance, funds will be transfered to them
+    loadKeys(*keyFile)
+
+    // start mining
     utils.StartMining(ethereum)
+
+    // checks if any addrs have 0 balance, tops them up
+    checkZeroBalance(peth)
+
    
     keyRing := ethutil.GetKeyRing()
     priv := ethutil.Hex(keyRing.Get(0).PrivateKey)
     //addrHex := ethutil.Hex(keyRing.Get(0).Address())
 
-    time.Sleep(time.Second)    
+    time.Sleep(time.Second*10)    
 
     //store an infohash at storage[0]
     infohash := "0x61f6beb929ffc6ccffca4e2250bb8f5edb727dd2"
-    p, err := peth.Create(priv, "271", "10000", "20000000000000", "this.store[0] = " + infohash)
+    p, err := peth.Create(priv, "271", "2000", "1000000", "this.store[0] = " + infohash)
     if err != nil{
         log.Fatal(err)
     }
-    logger.Infoln("created contract with address", p.Address, "to store the infohash", infohash)
+    logger.Infoln("created contract with address ", p.Address, " to store the infohash ", infohash)
     time.Sleep(time.Second)
     CurrentInfo(peth)
 
