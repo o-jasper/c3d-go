@@ -16,7 +16,7 @@ eg.
 
 ```
 cd $GOPATH/src/github.com/ethereum/eth-go
-git add remote pd git@github.com:project-douglas/eth-go
+git remote add pd git@github.com:project-douglas/eth-go
 git checkout -b pd
 git pull pd pd
 ```

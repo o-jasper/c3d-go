@@ -7,7 +7,6 @@ import (
     "html/template"
     "strings"
     "log"
-    "fmt"
 )
 
 type account struct{
@@ -134,8 +133,8 @@ func (s *Session) serveFile(w http.ResponseWriter, r *http.Request){
     if !strings.Contains(r.URL.Path, "."){
         s.handleIndex(w, r)
     }else{
-        path := fmt.Sprintf("../", r.URL.Path[1:])
-        http.ServeFile(w, r, path)
+        //path := fmt.Sprintf("../", r.URL.Path[1:])
+        http.ServeFile(w, r, r.URL.Path[1:])
     }
 }
 

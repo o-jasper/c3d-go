@@ -11,6 +11,7 @@ import (
     "errors"
 )
 
+var url string = fmt.Sprintf("http://localhost:%s/transmission/rpc/", *TransmissionPort)
 
 func StartTransmission(){
     cmd := exec.Command("transmission-daemon")
@@ -22,6 +23,15 @@ func StartTransmission(){
     logger.Infoln("Successfully started Transmission.  Watch it at http://localhost:9091")
 }
 
+func CreateTorrent(filename string){
+    cmd := exec.Command("transmission-create", filename)
+    err := cmd.Run()
+    if err != nil{
+        logger.Infoln("Couldn't create torrent from ", filename)
+    } else{
+        logger.Infoln("Successfully created new torrent file")
+    }
+}
 
 func StartTorrentCmd(infohash string){
     logger.Infoln("Starting torrent with infohash", infohash)
@@ -34,13 +44,16 @@ func StartTorrentCmd(infohash string){
     }
 }
 
-func StartTorrent(infohash string){
-    url := "http://localhost:9091/transmission/rpc/"
+func TransmissionRPC(infohash, method string) error {
     link := fmt.Sprintf("magnet:?xt=urn:btih:%s",infohash)
-    json := fmt.Sprintf(`{"arguments":{"filename":"%s"}, "method": "torrent-add"}`, link)
-    logger.Infoln(json)
+    json := fmt.Sprintf(`{"arguments":{"filename":"%s"}, "method": "%s"}`, link, method)
     header := make(map[string]string)
     err := http_post(url, header, json)
+    return err
+}
+
+func StartTorrent(infohash string){
+    err := TransmissionRPC(infohash, "torrent-start")
     if err != nil{
         logger.Infoln("Torrent start unsuccessful: ", err)
     } else {
@@ -48,6 +61,23 @@ func StartTorrent(infohash string){
     }
 }
 
+func StopTorrent(infohash string){
+    err := TransmissionRPC(infohash, "torrent-stop")
+    if err != nil{
+        logger.Infoln("Torrent stop unsuccessful: ", err)
+    } else {
+        logger.Infoln("Successfully stopped torrent ", infohash, ".")
+    }
+}
+
+func ShutdownTransmission(){
+    err:= http_post(url, make(map[string]string),` {"method":"session-close"}`)
+    if err != nil{
+        logger.Infoln("Could not shutdown transmission ", err)
+    } else{
+        logger.Infoln("Shutdown transmission")
+    }
+}
 
 func http_post(url string, header map[string]string, body string) error {
     b := strings.NewReader(body)

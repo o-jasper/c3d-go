@@ -30,6 +30,7 @@ var (
     EthConfigFile = flag.String("ethConfigFile", path.Join(homeDir(), ".pd-eth/config"), "ethereum configuration file")
     EthLogFile = flag.String("ethLogFile", "", "ethereum logging file. Defaults to stdout")
     EthPort = flag.String("ethPort", "30303", "ethereum listen port")
+    TransmissionPort = flag.String("transmissionPort", "9091", "transmission rpc port")
 )
 
 func Init(){
