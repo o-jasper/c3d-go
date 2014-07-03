@@ -17,8 +17,8 @@ var logger *ethlog.Logger = ethlog.NewLogger("C3D")
 
 
 func EthConfig() {
-    ethutil.ReadConfig(".test", "datadir", "", "c3d-go")
-    utils.InitLogging("datadir", "", int(ethlog.DebugLevel), "")
+    ethutil.ReadConfig(*ethConfigFile, *ethDataDir, "", "c3d-go")
+    utils.InitLogging(*ethDataDir, "", int(ethlog.DebugLevel), "")
 }
 
 func NewEthPEth() (*eth.Ethereum, *ethpub.PEthereum){

@@ -3,12 +3,19 @@ package main
 import (
     "github.com/ethereum/eth-go/ethutil"
     "os"
+        "os/user"
+    "path"
     "flag"
     "bytes"
     "io/ioutil"
     "log"
     "fmt"
 )
+
+func homeDir() string{
+    usr, _ := user.Current()
+    return usr.HomeDir
+}
 
 // Flags
 var (
@@ -19,8 +26,9 @@ var (
     storageAt = flag.String("storageAt", "", "storage address in contract")
     newKey = flag.Bool("newKey", false, "create a new key and send it funds from a genesis addr")
     keyFile = flag.String("keyFile", "keys.txt", "file in which private keys are stored")
+    ethDataDir = flag.String("ethDataDir", path.Join(homeDir(), ".pd-eth"), "directory for ethereum data")
+    ethConfigFile = flag.String("ethConfigFile", path.Join(homeDir(), ".pd-eth/config"), "ethereum configuration file")
 )
-
 
 func Init(){
     flag.Parse()
