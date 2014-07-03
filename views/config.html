@@ -1,0 +1,10 @@
+<h1>c3d Configuration</h1>
+
+<form name="config_form" method="post" action="/">
+<p>Ethereum listen port <input name="eth_listen_port" value={{.EthPort}}>
+<p>Ethereum data dir <input name="eth_data_dir" value={{.EthDataDir}}>
+<p>Ethereum log file <input name="eth_log_file" value={{.EthLogFile}}>
+<p>Ethereum config file <input name="eth_config_file" value={{.EthConfigFile}}>
+<p>Ethereum key file <input name="eth_key_file" value={{.EthKeyFile}}>
+<input type="hidden" name="reset_config" value="1">
+<p><input type="submit" value="Save Changes">

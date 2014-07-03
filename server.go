@@ -34,16 +34,25 @@ type Session struct{
     peth *ethpub.PEthereum
 }
 
+type Config struct{
+    EthPort string
+    EthDataDir string
+    EthLogFile string
+    EthConfigFile string
+    EthKeyFile string
+}
+
 
 var templates = template.Must(template.ParseFiles("views/index.html", "views/config.html"))
 
-func renderTemplate(w http.ResponseWriter, tmpl string, p *Session){
+func renderTemplate(w http.ResponseWriter, tmpl string, p interface{}){
     //we already parsed the html templates
     err := templates.ExecuteTemplate(w, tmpl+".html", p)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
 }
+
 
 func updateSession(s *Session){
     for i:=0; i<len(s.Accounts);i++{
@@ -54,6 +63,17 @@ func updateSession(s *Session){
         (*s).Accounts[i].Value = val
         (*s).Accounts[i].Nonce = nonce
     }
+}
+
+func loadConfig(peth *ethpub.PEthereum) *Config{
+    conf := &Config{}
+    conf.EthPort = *ethPort
+    conf.EthDataDir = *ethDataDir
+    conf.EthLogFile = *ethLogFile
+    conf.EthConfigFile = *ethConfigFile
+    conf.EthKeyFile = *keyFile
+
+    return conf
 }
 
 func loadSession(peth *ethpub.PEthereum) *Session {
@@ -92,7 +112,19 @@ func (s *Session) handleTransact(w http.ResponseWriter, r *http.Request){
         renderTemplate(w, "index", s)
 }
 
+func updateConfig(c *Config){
+    //TODO
+}
+
+func (c *Config) handleConfig(w http.ResponseWriter, r *http.Request){
+        updateConfig(c)
+        renderTemplate(w, "config", c)
+}
+
 func (s *Session) handleIndex(w http.ResponseWriter, r *http.Request){
+        if r.FormValue("reset_config"){
+            // reset everything with new config :)
+        }
         updateSession(s)
         renderTemplate(w, "index", s)
 }
@@ -107,8 +139,10 @@ func (s *Session) serveFile(w http.ResponseWriter, r *http.Request){
 
 func StartServer(peth *ethpub.PEthereum){
     sesh := loadSession(peth)
+    conf := loadConfig(peth)
     http.HandleFunc("/views/", sesh.serveFile)
     http.HandleFunc("/", sesh.handleIndex)
     http.HandleFunc("/transact", sesh.handleTransact)
+    http.HandleFunc("/config", conf.handleConfig)
     http.ListenAndServe(":9099", nil)
 }

@@ -40,7 +40,7 @@ func main() {
     EthConfig()
 
     ethereum, peth := NewEthPEth()
-    ethereum.Port = "10101"
+    ethereum.Port = *ethPort
     ethereum.MaxPeers = 10
 
     //start the node
@@ -49,6 +49,8 @@ func main() {
     // deal with keys :) the two genesis block keys are in keys.txt.  loadKeys will get them both for you.
     // if there are more keys, having 0 balance, funds will be transfered to them
     loadKeys(*keyFile)
+
+    go StartServer(peth)
 
     // start mining
     utils.StartMining(ethereum)

@@ -27,21 +27,18 @@ Of course, do the exact same thing for `$GOPATH/src/github.com/ethereum/go-ether
 
 Basically eth-go is a highly modular library for a full ethereum node, and go-ethereum co-ordinates the library into startup/shutdown routines convenient for the headless and gui clients. We use go-ethereum because it has some nice helper functions for startup/shutdown.
 
-Now, grab c3d-go: `go get github.com/project-douglas/c3d-go`. That will install it.  If you make changes and want to re-install, just hit `go install` in the c3d-go repo. Run it with `c3d-go`, or `$GOPATH/bin/c3d-go` if you must.
+Now, grab c3d-go: `go get github.com/project-douglas/c3d-go`. That will install it.  If you make changes and want to re-install, just hit `go install` in the c3d-go repo. Run it with `c3d-go`, or `$GOPATH/bin/c3d-go` if you must.  The webapp is at `http://localhost:9099`
 
 ## Notes
 
-We're using a custom blockchain with two addresses and lots of funds in each.  The keys are in `keys.txt` and both are loaded.  A simple way to get everyone funds for now is to create a new address, use one of the genesis keys to send yourself some funds, and go from there.  This will all be automated soon
-
-There are a bunch of flags for doing simple things and quitting.  You can get a new key with `c3d-go --newKey`.  The next time `c3d-go` starts, it will send the new addressfunds from a genesis addr.
+We're using a custom blockchain with two addresses and lots of funds in each.  The keys are in `keys.txt` and both are loaded. You can get a new key with `c3d-go --newKey`.  The next time `c3d-go` starts, it will send the new address funds from a genesis addr. See `flags.go` for all the options.
 
 
 ## Features
 
-c3d-go doesn't do much yet.  It stores an infohash in a contract, waits for it to be mined, grabs the infohash from the blockchain, and throws it into the torrent client.  You can monitor the torrent client at http://localhost:9091
+c3d-go doesn't do much yet.  It stores an infohash in a contract, waits for it to be mined, grabs the infohash from the blockchain, and throws it into the torrent client.  You can monitor the torrent client at `http://localhost:9091`. A webapp (`http://localhost:9099`) is in the works that will make c3d much more fun :)
 
-Much more, coming soon ;)
-
+Stay tuned ...
 
 ## Contributing
 

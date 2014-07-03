@@ -28,6 +28,8 @@ var (
     keyFile = flag.String("keyFile", "keys.txt", "file in which private keys are stored")
     ethDataDir = flag.String("ethDataDir", path.Join(homeDir(), ".pd-eth"), "directory for ethereum data")
     ethConfigFile = flag.String("ethConfigFile", path.Join(homeDir(), ".pd-eth/config"), "ethereum configuration file")
+    ethLogFile = flag.String("ethLogFile", "", "ethereum logging file. Defaults to stdout")
+    ethPort = flag.String("ethPort", "30303", "ethereum listen port")
 )
 
 func Init(){

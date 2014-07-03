@@ -9,8 +9,6 @@ import (
     "strconv"
 )
 
-
-
 func newKeyPair(){
     keyPair, err := ethutil.GenerateNewKeyPair()
     if err != nil{
