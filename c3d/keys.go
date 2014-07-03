@@ -1,4 +1,4 @@
-package main
+package c3d
 
 import (
     "github.com/ethereum/eth-go/ethutil"
@@ -20,7 +20,7 @@ func newKeyPair(){
 }
 
 // private keys in plain-text hex format one per line
-func loadKeys(filename string){
+func LoadKeys(filename string){
     keyData, err := ioutil.ReadFile(filename)
     if err != nil{
         log.Println("Could not find keys file. Creating new keypair...")        
@@ -42,7 +42,7 @@ func loadKeys(filename string){
     logger.Infoln("Keys loaded: ", ethutil.GetKeyRing().Len())
 }
 
-func checkZeroBalance(peth *ethpub.PEthereum){
+func CheckZeroBalance(peth *ethpub.PEthereum){
     keys := ethutil.GetKeyRing()
     master := ethutil.Hex(keys.Get(keys.Len()-1).PrivateKey)
     logger.Infoln("master has ", peth.GetStateObject(ethutil.Hex(keys.Get(keys.Len()-1).Address())).Value())

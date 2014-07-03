@@ -1,5 +1,7 @@
 <head>
-<link type="text/css" rel="stylesheet" href="/views/style.css">
+<link type="text/css" rel="stylesheet" href="/assets/css/style.css">
+<link type="text/javacript" rel="script" href="/assets/js/ajax.js">
+<link type="text/javacript" rel="script" href="/assets/js/callback.js">
 <script>
     var acc = {{(index .Accounts 0).Addr}};
     function changeAcc(addr, value){
@@ -8,7 +10,6 @@
         document.getElementById("value").innerHTML = "Value: "+ value;
         document.getElementById("from_addr").value = addr;
     }
-
 </script>
 </head>
 <h1>c3d Browser</h1>
@@ -24,11 +25,29 @@
 <p id="value">Value:{{(index .Accounts 0).Value}}</p>
 
 <h3>Transact</h3>
-<form name="transact" method="post" action="transact">
+<form id="transact_form" name="transact">
     <p>Recipient: <input name="recipient"></input>
     <p>Amount: <input name="amount"></input>
     <p>Gas: <input name="gas" value="500"></input>
     <p>GasPrice: <input name="gasprice" value="1000"></input>
     <input id="from_addr" name="from_addr" type="hidden" value="{{(index .Accounts 0).Addr}}"></input>
-    <p><input type="submit" name="submit" value="Transact">
+    <p><input type="submit" name="submit" value="Transact" onclick="send_transaction;">
+</form>
+
+
+<h3>Torrent Downloads</h3>
+
+
+
+<h3>Storage Lookup</h3>
+<form name="storage_lookup" method="post", action="/">
+    <p>Contract Address: <input name="contract_addr">
+    <p>Storage Address: <input name="storage_addr">
+    <p><input type="submit" value="Run Lookup">
+</form>
+
+
+
+
+
 

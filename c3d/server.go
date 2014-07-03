@@ -1,4 +1,4 @@
-package main
+package c3d
 
 import (
     "github.com/ethereum/eth-go/ethpub"
@@ -7,6 +7,7 @@ import (
     "html/template"
     "strings"
     "log"
+    "fmt"
 )
 
 type account struct{
@@ -67,11 +68,11 @@ func updateSession(s *Session){
 
 func loadConfig(peth *ethpub.PEthereum) *Config{
     conf := &Config{}
-    conf.EthPort = *ethPort
-    conf.EthDataDir = *ethDataDir
-    conf.EthLogFile = *ethLogFile
-    conf.EthConfigFile = *ethConfigFile
-    conf.EthKeyFile = *keyFile
+    conf.EthPort = *EthPort
+    conf.EthDataDir = *EthDataDir
+    conf.EthLogFile = *EthLogFile
+    conf.EthConfigFile = *EthConfigFile
+    conf.EthKeyFile = *KeyFile
 
     return conf
 }
@@ -122,7 +123,7 @@ func (c *Config) handleConfig(w http.ResponseWriter, r *http.Request){
 }
 
 func (s *Session) handleIndex(w http.ResponseWriter, r *http.Request){
-        if r.FormValue("reset_config"){
+        if r.FormValue("reset_config") == "1"{
             // reset everything with new config :)
         }
         updateSession(s)
@@ -133,14 +134,15 @@ func (s *Session) serveFile(w http.ResponseWriter, r *http.Request){
     if !strings.Contains(r.URL.Path, "."){
         s.handleIndex(w, r)
     }else{
-        http.ServeFile(w, r, r.URL.Path[1:])
+        path := fmt.Sprintf("../", r.URL.Path[1:])
+        http.ServeFile(w, r, path)
     }
 }
 
 func StartServer(peth *ethpub.PEthereum){
     sesh := loadSession(peth)
     conf := loadConfig(peth)
-    http.HandleFunc("/views/", sesh.serveFile)
+    http.HandleFunc("/assets/", sesh.serveFile)
     http.HandleFunc("/", sesh.handleIndex)
     http.HandleFunc("/transact", sesh.handleTransact)
     http.HandleFunc("/config", conf.handleConfig)

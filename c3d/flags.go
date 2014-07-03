@@ -1,4 +1,4 @@
-package main
+package c3d
 
 import (
     "github.com/ethereum/eth-go/ethutil"
@@ -25,11 +25,11 @@ var (
     lookupDownloadTorrent = flag.String("lookupDownloadTorrent", "", "lookup this contract address for an infohash, using storageAt flag for sotrage address")
     storageAt = flag.String("storageAt", "", "storage address in contract")
     newKey = flag.Bool("newKey", false, "create a new key and send it funds from a genesis addr")
-    keyFile = flag.String("keyFile", "keys.txt", "file in which private keys are stored")
-    ethDataDir = flag.String("ethDataDir", path.Join(homeDir(), ".pd-eth"), "directory for ethereum data")
-    ethConfigFile = flag.String("ethConfigFile", path.Join(homeDir(), ".pd-eth/config"), "ethereum configuration file")
-    ethLogFile = flag.String("ethLogFile", "", "ethereum logging file. Defaults to stdout")
-    ethPort = flag.String("ethPort", "30303", "ethereum listen port")
+    KeyFile = flag.String("keyFile", "keys.txt", "file in which private keys are stored")
+    EthDataDir = flag.String("ethDataDir", path.Join(homeDir(), ".pd-eth"), "directory for ethereum data")
+    EthConfigFile = flag.String("ethConfigFile", path.Join(homeDir(), ".pd-eth/config"), "ethereum configuration file")
+    EthLogFile = flag.String("ethLogFile", "", "ethereum logging file. Defaults to stdout")
+    EthPort = flag.String("ethPort", "30303", "ethereum listen port")
 )
 
 func Init(){
@@ -59,7 +59,7 @@ func Init(){
     if *newKey{
         args := flag.Args()
         n := flag.NArg()
-        filename := "keys.txt"
+        filename := *KeyFile
         if n > 0{
             filename = args[0]
         }

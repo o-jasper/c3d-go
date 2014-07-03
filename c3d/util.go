@@ -1,4 +1,4 @@
-package main
+package c3d
 
 import (
     "github.com/ethereum/eth-go/ethutil"

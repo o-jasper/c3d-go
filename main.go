@@ -5,6 +5,7 @@ import (
     "github.com/ethereum/eth-go/ethutil"
     "github.com/ethereum/eth-go/ethpub"
     "github.com/ethereum/go-ethereum/utils"
+    "github.com/project-douglas/c3d-go/c3d"
     "os"
     "log"
     "time"
@@ -19,8 +20,8 @@ func callback(peth *ethpub.PEthereum, addr string, ethereum *eth.Ethereum){
     for {
         _ = <- ch
         hexAddr := ethutil.Hex([]byte(addr))
-        logger.Infoln("hex addr ", hexAddr)
-        GetInfoHashStartTorrent(peth, hexAddr, "0")
+        //c3d.logger.Infoln("hex addr ", hexAddr)
+        c3d.GetInfoHashStartTorrent(peth, hexAddr, "0")
     }
 }
 
@@ -31,16 +32,16 @@ func callback(peth *ethpub.PEthereum, addr string, ethereum *eth.Ethereum){
 */
 func main() {
     // parse flags.
-    Init()
+    c3d.Init()
 
     // check if transmission is running. if not, start 'er up
-    CheckStartTransmission()
+    c3d.CheckStartTransmission()
 
     // basic ethereum config.  let's put this in a big file
-    EthConfig()
+    c3d.EthConfig()
 
-    ethereum, peth := NewEthPEth()
-    ethereum.Port = *ethPort
+    ethereum, peth := c3d.NewEthPEth()
+    ethereum.Port = *c3d.EthPort
     ethereum.MaxPeers = 10
 
     //start the node
@@ -48,15 +49,15 @@ func main() {
 
     // deal with keys :) the two genesis block keys are in keys.txt.  loadKeys will get them both for you.
     // if there are more keys, having 0 balance, funds will be transfered to them
-    loadKeys(*keyFile)
+    c3d.LoadKeys(*c3d.KeyFile)
 
-    go StartServer(peth)
+    go c3d.StartServer(peth)
 
     // start mining
     utils.StartMining(ethereum)
 
     // checks if any addrs have 0 balance, tops them up
-    checkZeroBalance(peth)
+    c3d.CheckZeroBalance(peth)
 
    
     keyRing := ethutil.GetKeyRing()
@@ -71,9 +72,9 @@ func main() {
     if err != nil{
         log.Fatal(err)
     }
-    logger.Infoln("created contract with address ", p.Address, " to store the infohash ", infohash)
+    log.Println("created contract with address ", p.Address, " to store the infohash ", infohash)
     time.Sleep(time.Second)
-    CurrentInfo(peth)
+    c3d.CurrentInfo(peth)
 
     /* The storage is not available until we've mined. We'll ultimately need access to the txPool
         for now, we use a callback that triggers when our contracts state changes

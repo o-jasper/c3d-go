@@ -1,5 +1,5 @@
 
-package main
+package c3d
 
 import (
     "github.com/ethereum/eth-go"
@@ -17,8 +17,8 @@ var logger *ethlog.Logger = ethlog.NewLogger("C3D")
 
 
 func EthConfig() {
-    ethutil.ReadConfig(*ethConfigFile, *ethDataDir, "", "c3d-go")
-    utils.InitLogging(*ethDataDir, *ethLogFile, int(ethlog.DebugLevel), "")
+    ethutil.ReadConfig(*EthConfigFile, *EthDataDir, "", "c3d-go")
+    utils.InitLogging(*EthDataDir, *EthLogFile, int(ethlog.DebugLevel), "")
 }
 
 func NewEthPEth() (*eth.Ethereum, *ethpub.PEthereum){
