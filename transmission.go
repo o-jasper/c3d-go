@@ -1,39 +1,16 @@
 package main
 
 import (
+    "fmt"
     "log"
     "time"
     "os/exec"
     "bytes"
     "strings"
+    "net/http"
+    "errors"
 )
 
-func KillPidByName(name string){
-    /* should be cross platform
-       `ps aux | grep name | awk '{print $2}' | xargs kill -9`
-    */
-    c1 := exec.Command("ps", "aux")
-    c2 := exec.Command("grep", name)
-    c3 := exec.Command("awk", "{print $2}")
-    c4 := exec.Command("xargs", "kill", "-9")
-    c2.Stdin, _ = c1.StdoutPipe()
-    c3.Stdin, _ = c2.StdoutPipe()
-    c4.Stdin, _ = c3.StdoutPipe()
-    
-    c1.Start()
-    c2.Start()
-    c3.Start()
-    c4.Start()
-    c1.Wait()
-    c2.Wait()
-    c3.Wait()
-    c4.Wait()
-}
-
-func DownloadTorrent(infohash string){
-    CheckStartTransmission() 
-    StartTorrent(infohash)
-}
 
 func StartTransmission(){
     cmd := exec.Command("transmission-daemon")
@@ -45,7 +22,8 @@ func StartTransmission(){
     logger.Infoln("Successfully started Transmission.  Watch it at http://localhost:9091")
 }
 
-func StartTorrent(infohash string){
+
+func StartTorrentCmd(infohash string){
     logger.Infoln("Starting torrent with infohash", infohash)
     cmd := exec.Command("transmission-remote", "--add", "magnet:?xt=urn:btih:"+infohash, "--dht")
     err := cmd.Run()
@@ -54,6 +32,50 @@ func StartTorrent(infohash string){
     } else {
         logger.Infoln("torrent download successfully started. Monitor at http://localhost:9091")
     }
+}
+
+func StartTorrent(infohash string){
+    url := "http://localhost:9091/transmission/rpc/"
+    link := fmt.Sprintf("magnet:?xt=urn:btih:%s",infohash)
+    json := fmt.Sprintf(`{"arguments":{"filename":"%s"}, "method": "torrent-add"}`, link)
+    logger.Infoln(json)
+    header := make(map[string]string)
+    err := http_post(url, header, json)
+    if err != nil{
+        logger.Infoln("Torrent start unsuccessful: ", err)
+    } else {
+        logger.Infoln("Successfully started torrent ", infohash, ". Monitor its progress at http://localhost:9091")
+    }
+}
+
+
+func http_post(url string, header map[string]string, body string) error {
+    b := strings.NewReader(body)
+    client := &http.Client{}
+
+    req, err := http.NewRequest("POST", url, b)
+    if err != nil{
+        logger.Infoln(err)
+    }
+    for k, v := range header{
+        req.Header.Add(k, v)
+    }
+    resp, err := client.Do(req)
+    if err != nil{
+        logger.Infoln(err)
+    }
+    if strings.Contains(resp.Status, "409"){
+        header["X-Transmission-Session-Id"] = resp.Header["X-Transmission-Session-Id"][0]
+        http_post(url, header, body)
+    } else if !strings.Contains(resp.Status, "200"){
+        logger.Infoln("Could not connect!")
+        logger.Infoln(resp)
+        return errors.New(resp.Status)
+    } else {
+        logger.Infoln("Connection successful ", resp)
+        return nil
+    }
+    return nil
 }
 
 func GetTorrentInfo(infohash string) []string{
@@ -99,6 +121,12 @@ func CheckStartTransmission(){
     }
     time.Sleep(time.Second)
 }
+
+func DownloadTorrent(infohash string){
+    CheckStartTransmission() 
+    StartTorrent(infohash)
+}
+
 
 /*
 func main() {

@@ -8,6 +8,8 @@ import (
     "github.com/ethereum/eth-go/ethlog"
     "github.com/ethereum/go-ethereum/utils"
     "log"
+    "bytes"
+    "fmt"
 )
 
 //Logging
@@ -30,11 +32,16 @@ func NewEthPEth() (*eth.Ethereum, *ethpub.PEthereum){
     return ethereum, peth
 }
 
-func GetInfoHashStartTorrent(peth *ethpub.PEthereum, contract_addr string, storage_addr string){
-    logger.Infoln("contract addr and storage", contract_addr, storage_addr)
+func GetStorageAt(peth *ethpub.PEthereum, contract_addr string, storage_addr string) string{
     ret := peth.GetStorage(contract_addr, storage_addr) // returns a massive base-10 integer.
-    infohash := BigNumStrToHex(ret)
-    logger.Infoln("recovered infohash", infohash)
+    val := BigNumStrToHex(ret)
+    return val
+}
+
+func GetInfoHashStartTorrent(peth *ethpub.PEthereum, contract_addr string, storage_addr string){
+    logger.Infoln("contract addr and storage ", contract_addr, storage_addr)
+    infohash := GetStorageAt(peth, contract_addr, storage_addr)
+    logger.Infoln("recovered infohash ", infohash)
     StartTorrent(infohash)
 }
 
@@ -48,19 +55,21 @@ func CurrentInfo(peth *ethpub.PEthereum){
     //coinbase := peth.GetCoinBase()
     txs := peth.GetTransactionsFor(addr, true)
     //tx_count := peth.GetTxCountAt(addr)
-
-    logger.Infoln("Summary of Current Ethereum Node State")
-    logger.Infoln("N Peers: \t", n_peers)
+    
+    var buf bytes.Buffer
+    buf.WriteString("Summary of Current Ethereum Node State\n")
+    buf.WriteString(fmt.Sprintf("\tN Peers: \t %d\n", n_peers))
     for _, p := range(peers){
-        logger.Infoln("\t\tPeer: ", p.Ip, ":", p.Port)
+        buf.WriteString(fmt.Sprintf("\t\t\tPeer: %s:%s\n", p.Ip,  p.Port))
     }
-    logger.Infoln("Top Address on KeyRing:")
-    logger.Infoln("\tAddress:\t", addr)
-    logger.Infoln("\tValue:\t", state.Value())
-    logger.Infoln("\tNonce:\t", state.Nonce())
-    logger.Infoln("Is Mining?\t", isMin)
-    logger.Infoln("Is Listening?\t", isLis)
-    //logger.Infoln("Coinbase: \t", coinbase)
-    logger.Infoln("Txs for\t", txs)
+    buf.WriteString("\tTop Address on KeyRing:\n")
+    buf.WriteString(fmt.Sprintf("\t\tAddress:\t %s\n", addr))
+    buf.WriteString(fmt.Sprintf("\t\tValue:\t %s\n", state.Value()))
+    buf.WriteString(fmt.Sprintf("\t\tNonce:\t %d\n", state.Nonce()))
+    buf.WriteString(fmt.Sprintf("\t\tIs Mining?\t %t\n", isMin))
+    buf.WriteString(fmt.Sprintf("\t\tIs Listening?\t %t\n", isLis))
+    buf.WriteString(fmt.Sprintf("\t\tTxs for\t %s\n", txs))
+    //buf.WriteString("Coinbase: \t", coinbase)
+    logger.Infoln(buf.String())
 }
 

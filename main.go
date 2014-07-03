@@ -61,10 +61,10 @@ func main() {
     priv := ethutil.Hex(keyRing.Get(0).PrivateKey)
     //addrHex := ethutil.Hex(keyRing.Get(0).Address())
 
-    time.Sleep(time.Second*10)    
+    //time.Sleep(time.Second*10)    
 
     //store an infohash at storage[0]
-    infohash := "0x61f6beb929ffc6ccffca4e2250bb8f5edb727dd2"
+    infohash := "0x1183596810fbca83fce8e12d98234aaaf38eb7cd"
     p, err := peth.Create(priv, "271", "2000", "1000000", "this.store[0] = " + infohash)
     if err != nil{
         log.Fatal(err)
