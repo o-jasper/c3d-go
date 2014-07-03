@@ -53,7 +53,6 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p interface{}){
     }
 }
 
-
 func updateSession(s *Session){
     for i:=0; i<len(s.Accounts);i++{
         addr := (*s).Accounts[i].Addr
@@ -109,7 +108,7 @@ func (s *Session) handleTransact(w http.ResponseWriter, r *http.Request){
             log.Println(err)
         }
         log.Println(p)
-        renderTemplate(w, "index", s)
+       // renderTemplate(w, "index", s)
 }
 
 func updateConfig(c *Config){

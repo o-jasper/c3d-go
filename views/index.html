@@ -1,7 +1,7 @@
 <head>
-<link type="text/css" rel="stylesheet" href="/assets/css/style.css">
-<link type="text/javacript" rel="script" href="/assets/js/ajax.js">
-<link type="text/javacript" rel="script" href="/assets/js/callback.js">
+<link type="text/css" rel="stylesheet" href="assets/css/style.css">
+<script type="text/javascript" src="assets/js/ajax.js?version=271"></script>
+<script type="text/javascript" src="assets/js/callback.js"></script>
 <script>
     var acc = {{(index .Accounts 0).Addr}};
     function changeAcc(addr, value){
@@ -31,7 +31,7 @@
     <p>Gas: <input name="gas" value="500"></input>
     <p>GasPrice: <input name="gasprice" value="1000"></input>
     <input id="from_addr" name="from_addr" type="hidden" value="{{(index .Accounts 0).Addr}}"></input>
-    <p><input type="submit" name="submit" value="Transact" onclick="send_transaction;">
+    <p><input type="submit" name="submit" value="Transact" onclick="send_tx()">
 </form>
 
 
