@@ -7,6 +7,36 @@ import (
 
 type EthJsonRpcCpp struct {
 	Addr string
+	DefaultPrivKey string
+	DefaultGas string
+	DefaultGasPrice string
+}
+
+func NewEthJsonRpcCpp(addr string) EthJsonRpcCpp {
+	return EthJsonRpcCpp{Addr:addr, DefaultGas:"100000", DefaultGasPrice:"100000000000000"}
+}
+
+//Hrmmm stuff like this makes me feel go sucks.
+func (eth EthJsonRpcCpp) UsePrivKey(sec_key string) string {
+	if sec_key == "" {  //Really want an single-line if.. And keyword (&optional) arguments.
+		return eth.DefaultPrivKey
+	} else {
+		return sec_key
+	}
+}
+func (eth EthJsonRpcCpp) UseGas(gas string) string {
+	if gas == "" {
+		return eth.DefaultGas
+	} else {
+		return gas
+	}
+}
+func (eth EthJsonRpcCpp) UseGasPrice(gas_price string) string {
+	if gas_price == "" {
+		return eth.DefaultGasPrice
+	} else {
+		return gas_price
+	}
 }
 
 func (eth EthJsonRpcCpp) Rpc(method string, params map[string]string) map[string] interface{} {	return json_rpc.Rpc_json(eth.Addr, method, params)
@@ -64,12 +94,12 @@ func (eth EthJsonRpcCpp) SecretToAddress(sec string) string {
 	return eth.Rpc("secretToAddress", map[string]string{"a":sec})["result"].(string)
 }
 
-func (eth EthJsonRpcCpp) Transact(seckey string, to string, value string, gas string, gasPrice string, data string) map[string] interface{} {
-	return eth.Rpc("transact", map[string]string{"sec":seckey, "aDest":to, "xValue":value, "xGas":gas, "xGasPrice":gasPrice, "bData":data})
+func (eth EthJsonRpcCpp) Transact(sec_key string, to string, value string, gas string, gasPrice string, data string) map[string] interface{} {
+	return eth.Rpc("transact", map[string]string{"sec":eth.UsePrivKey(sec_key), "aDest":to, "xValue":value, "xGas":eth.UseGas(gas), "xGasPrice":eth.UseGasPrice(gasPrice), "bData":data})
 }
 
-func (eth EthJsonRpcCpp) Create(secKey string, value string, gas string, gasPrice string, init string, hexCode string) map[string] interface{} {
-	return eth.Rpc("create", map[string]string{"sec":secKey, "xEndowment":value, "xGas":gas, "xGasPrice":gas, "bCode":hexCode})
+func (eth EthJsonRpcCpp) Create(sec_key string, value string, gas string, gas_price string, hex_code string) string {
+	return eth.Rpc("create", map[string]string{"sec":eth.UsePrivKey(sec_key), "xEndowment":value, "xGas":eth.UseGas(gas), "xGasPrice":eth.UseGasPrice(gas_price), "bCode":hex_code})["result"].(string)
 }
 
 func (eth EthJsonRpcCpp) GetBalanceAt(addr string) string {
@@ -79,7 +109,6 @@ func (eth EthJsonRpcCpp) GetBalanceAt(addr string) string {
 func (eth EthJsonRpcCpp) GetGasPrice(addr string) interface{} {
 	return eth.Rpc_("gasPrice")["result"]
 }
-
 
 //{"method"=>"block", "params"=>{"a"=>""
 //{"method"=>"check", "params"=>{"a"=>[]
