@@ -3,7 +3,7 @@ package main
 import (
 //	"flag"
 	"fmt"
-	"eth_json_rpc"
+	"github.com/project-douglas/c3d-go/src/eth_json_rpc"
 )
 
 
@@ -12,7 +12,9 @@ func main() {
 //	fmt.Println(eth_json_rpc.Rpc_json("http://localhost:9090/", "procedures", map[string]string{}))
 	rpc := eth_json_rpc.EthJsonRpcCpp{Addr:"http://localhost:9090/"}
 	fmt.Println(rpc.GetKey())
+	fmt.Println(rpc.GetKeys())
 	fmt.Println(rpc.GetPeerCount())
+	fmt.Println(rpc.GetPeers())
 	fmt.Println(rpc.GetIsMining())
 	fmt.Println(rpc.GetKeys())
 	fmt.Println(rpc.GetCoinBase())

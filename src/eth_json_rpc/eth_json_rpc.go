@@ -1,8 +1,8 @@
 package eth_json_rpc
 
 import (
-	"json_rpc"
-	"github.com/ethereum/eth-go/ethpub"
+	"github.com/project-douglas/c3d-go/src/json_rpc"
+	"github.com/project-douglas/eth-go/ethpub"
 )
 
 type EthJsonRpcCpp struct {
@@ -15,22 +15,22 @@ func (eth EthJsonRpcCpp) Rpc_(method string) map[string] interface{} {
 	return json_rpc.Rpc_json(eth.Addr, method, map[string]string{})
 }
 
-//Code repeat ahead!
-
-func pkey_from_privkey(privkey string) ethpub.PKey {  //TODO... how to get the pubkey?
+//TODO... how to get the pubkey?
+func (eth EthJsonRpcCpp) pkey_from_privkey(privkey string) ethpub.PKey {
 	return ethpub.PKey{PrivateKey:privkey, Address:eth.SecretToAddress(privkey)}
 }
 
 // Get the different things to interface.
+//Code repeat ahead!
 
 func (eth EthJsonRpcCpp) GetKey() ethpub.PKey {
-	return pkey_from_privkey(Rpc_("key")["result"].(string))
+	return eth.pkey_from_privkey(eth.Rpc_("key")["result"].(string))
 }
 func (eth EthJsonRpcCpp) GetKeys() [] ethpub.PKey { //TODO reconstruct to string list?
 	list := eth.Rpc_("keys")["result"].([]interface{})
 	ret_list := [] ethpub.PKey{}
 	for i := range list {
-		ret_list = append(ret_list, pkey_from_privkey(list[i].(string)))
+		ret_list = append(ret_list, eth.pkey_from_privkey(list[i].(string)))
 	}
 	return ret_list
 }

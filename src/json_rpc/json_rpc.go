@@ -3,7 +3,6 @@ package json_rpc
 import (
 	"fmt"
 	"net/http"
-//	"io/ioutil"
 	"strings"
 	"time"
 	"encoding/json"
