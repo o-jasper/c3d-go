@@ -21,8 +21,8 @@ func main() {
 	addr := "0x8d863d4cdd41c9ad1c6d01f961bd16590632cd68"
 	fmt.Println(rpc.GetGasPrice(addr))
 	fmt.Println("With args")
-	fmt.Println(rpc.GetStorageAt(addr, "0x20"))
+	fmt.Println(rpc.GetStorage(addr, "0x20"))
 	fmt.Println(rpc.GetTxCountAt(addr))
-	fmt.Println(rpc.GetIsContractAt(addr))
+	fmt.Println(rpc.GetIsContract(addr))
 	fmt.Println(rpc.GetBalanceAt(addr))
 }

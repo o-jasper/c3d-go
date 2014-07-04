@@ -2,6 +2,7 @@ package eth_json_rpc
 
 import (
 	"json_rpc"
+	"github.com/ethereum/eth-go/ethpub"
 )
 
 type EthJsonRpcCpp struct {
@@ -17,11 +18,14 @@ func (eth EthJsonRpcCpp) Rpc_(method string) map[string] interface{} {
 //Code repeat ahead!
 
 // Get the different things to interface.
-func (eth EthJsonRpcCpp) GetKey() string {
-	return eth.Rpc_("key")["result"].(string)
+
+func (eth EthJsonRpcCpp) GetKey() ethpub.PKey {
+	privkey := eth.Rpc_("key")["result"].(string)  //TODO... how to get the pubkey?
+	return ethpub.PKey{PrivateKey:privkey, Address:eth.SecretToAddress(privkey)}
 }
-func (eth EthJsonRpcCpp) GetPeerCount() int64 {
-	return int64(eth.Rpc_("peerCount")["result"].(float64))
+
+func (eth EthJsonRpcCpp) GetPeerCount() int {
+	return int(eth.Rpc_("peerCount")["result"].(float64))
 }
 func (eth EthJsonRpcCpp) GetIsMining() bool {
 	return eth.Rpc_("isMining")["result"].(bool)
@@ -32,16 +36,16 @@ func (eth EthJsonRpcCpp) GetIsListening() bool {
 func (eth EthJsonRpcCpp) GetCoinBase() string {
 	return eth.Rpc_("coinbase")["result"].(string)
 }
-func (eth EthJsonRpcCpp) GetStorageAt(hexAddress string, hexStorageAddress string) string {
+func (eth EthJsonRpcCpp) GetStorage(hexAddress string, hexStorageAddress string) string {
 	return eth.Rpc("storageAt", map[string]string{"a":hexAddress, "x":hexStorageAddress})["result"].(string)
 }
 func (eth EthJsonRpcCpp) GetTxCountAt(hexAddress string) string {
 	return eth.Rpc("txCountAt", map[string]string{"a":hexAddress})["result"].(string)
 }
-func (eth EthJsonRpcCpp) GetIsContractAt(hexAddress string) bool {
+func (eth EthJsonRpcCpp) GetIsContract(hexAddress string) bool {
 	return eth.Rpc("isContractAt", map[string]string{"a":hexAddress})["result"].(bool)
 }
-func (eth EthJsonRpcCpp) SecretToAddresss(sec string) string {
+func (eth EthJsonRpcCpp) SecretToAddress(sec string) string {
 	return eth.Rpc("secretToAddress", map[string]string{"a":sec})["result"].(string)
 }
 
