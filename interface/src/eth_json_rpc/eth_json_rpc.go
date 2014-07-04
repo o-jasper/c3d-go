@@ -17,16 +17,31 @@ func (eth EthJsonRpcCpp) Rpc_(method string) map[string] interface{} {
 
 //Code repeat ahead!
 
+func pkey_from_privkey(privkey string) ethpub.PKey {  //TODO... how to get the pubkey?
+	return ethpub.PKey{PrivateKey:privkey, Address:eth.SecretToAddress(privkey)}
+}
+
 // Get the different things to interface.
 
 func (eth EthJsonRpcCpp) GetKey() ethpub.PKey {
-	privkey := eth.Rpc_("key")["result"].(string)  //TODO... how to get the pubkey?
-	return ethpub.PKey{PrivateKey:privkey, Address:eth.SecretToAddress(privkey)}
+	return pkey_from_privkey(Rpc_("key")["result"].(string))
+}
+func (eth EthJsonRpcCpp) GetKeys() [] ethpub.PKey { //TODO reconstruct to string list?
+	list := eth.Rpc_("keys")["result"].([]interface{})
+	ret_list := [] ethpub.PKey{}
+	for i := range list {
+		ret_list = append(ret_list, pkey_from_privkey(list[i].(string)))
+	}
+	return ret_list
 }
 
 func (eth EthJsonRpcCpp) GetPeerCount() int {
 	return int(eth.Rpc_("peerCount")["result"].(float64))
 }
+func (eth EthJsonRpcCpp) GetPeers() []ethpub.PPeer {
+	return []ethpub.PPeer{ethpub.PPeer{Ip:"Peer getting not supported"}}  // TODO not supported.
+}
+
 func (eth EthJsonRpcCpp) GetIsMining() bool {
 	return eth.Rpc_("isMining")["result"].(bool)
 }
@@ -63,9 +78,6 @@ func (eth EthJsonRpcCpp) GetBalanceAt(addr string) string {
 
 func (eth EthJsonRpcCpp) GetGasPrice(addr string) interface{} {
 	return eth.Rpc_("gasPrice")["result"]
-}
-func (eth EthJsonRpcCpp) GetKeys() [] interface{} { //TODO reconstruct to string list?
-	return eth.Rpc_("keys")["result"].([]interface{})
 }
 
 
